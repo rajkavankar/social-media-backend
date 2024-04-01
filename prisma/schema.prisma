@@ -1,0 +1,66 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Roles {
+  ADMIN
+  USER
+}
+
+model Users {
+  id        String   @id @default(cuid())
+  name      String   @db.VarChar(255)
+  email     String   @unique @db.VarChar(255)
+  password  String   @db.VarChar(255)
+  role      Roles    @default(USER)
+  picKey    String?  @db.VarChar(255)
+  picUrl    String?  @db.VarChar(255)
+  createdAt DateTime @default(now())
+  Posts     Posts[]
+  Likes     Likes[]
+
+  FollowedBy Followers[] @relation("FollowedBy")
+  FollowedTo Followers[] @relation("FollowedTo")
+
+  Followers Followers[]
+}
+
+model Posts {
+  id        String   @id @default(cuid())
+  body      String   @db.VarChar(255)
+  mediaKey  String?  @db.VarChar(255)
+  mediaUrl  String?  @db.VarChar(255)
+  creatorId String   @db.VarChar(255)
+  creator   Users    @relation(fields: [creatorId], references: [id])
+  createdAt DateTime @default(now())
+  Likes     Likes[]
+}
+
+model Likes {
+  id     String @id @default(cuid())
+  userId String @db.VarChar(255)
+  postId String @db.VarChar(255)
+  post   Posts  @relation(fields: [postId], references: [id])
+  user   Users  @relation(fields: [userId], references: [id])
+}
+
+model Followers {
+  id          String  @id @default(cuid())
+  followerId  String  @db.VarChar(255)
+  followingId String  @db.VarChar(255)
+  follwedBy   Users   @relation("FollowedBy", fields: [followerId], references: [id])
+  followedTo  Users   @relation("FollowedTo", fields: [followingId], references: [id])
+  Users       Users?  @relation(fields: [usersId], references: [id])
+  usersId     String?
+}

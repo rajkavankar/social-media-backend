@@ -1,0 +1,88 @@
+openapi: 3.1.0
+info:
+  title: Social media
+  description: Backend api for `Social media app`.
+  version: 1.0.0
+  contact:
+    name: Raj kavankar
+    email: rajkavankar@gmail.com
+
+servers:
+  - url: http://localhost:5000/api/v1
+    description: Development server
+
+tags:
+  - name: User
+    description: user related operatios
+  - name: Post
+    description: posts related operations
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: token
+  schemas:
+    User:
+      required:
+        - name
+        - email
+        - password
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+        role:
+          type: string
+          enum:
+            - ADMIN
+            - USER
+          default: USER
+        picKey:
+          type: string
+          nullable: true
+        picUrl:
+          type: string
+          format: uri
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+    Post:
+      required:
+        - body
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        body:
+          type: string
+        mediaKey:
+          type: string
+          nullable: true
+        mediaUrl:
+          type: string
+          format: uri
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
