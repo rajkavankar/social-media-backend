@@ -4,6 +4,7 @@ import { AuthError } from "../utils/ApiError"
 import { config } from "../config/config"
 import { db } from "../config/db"
 import { type Request, Response, NextFunction } from "express"
+import { Users } from "@prisma/client"
 
 export const isLoggedIn = asyncHandler(async (req, res, next) => {
   let token
@@ -24,11 +25,11 @@ export const isLoggedIn = asyncHandler(async (req, res, next) => {
   try {
     const decodedJwtPayload = jwt.verify(token, config.JWT_SECRET) as JwtPayload
 
-    req.body.loggedInUser = await db.users.findUnique({
+    req.body.loggedInUser = (await db.users.findUnique({
       where: {
         id: decodedJwtPayload.id,
       },
-    })
+    })) as Users
 
     next()
   } catch (error) {

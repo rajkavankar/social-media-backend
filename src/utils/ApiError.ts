@@ -22,7 +22,7 @@ export class AuthError extends ApiError {
 
 export class ServerError extends ApiError {
   constructor(
-    statusCode = StatusCodes.REQUEST_TIMEOUT,
+    statusCode = StatusCodes.INTERNAL_SERVER_ERROR,
     message = "Something went wrong"
   ) {
     super(statusCode, message)
