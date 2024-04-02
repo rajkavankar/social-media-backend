@@ -34,17 +34,19 @@ model Users {
   FollowedTo Followers[] @relation("FollowedTo")
 
   Followers Followers[]
+  Comment   Comment[]
 }
 
 model Posts {
-  id        String   @id @default(cuid())
-  body      String   @db.VarChar(255)
-  mediaKey  String?  @db.VarChar(255)
-  mediaUrl  String?  @db.VarChar(255)
-  creatorId String   @db.VarChar(255)
-  creator   Users    @relation(fields: [creatorId], references: [id])
-  createdAt DateTime @default(now())
+  id        String    @id @default(cuid())
+  body      String    @db.VarChar(255)
+  mediaKey  String?   @db.VarChar(255)
+  mediaUrl  String?   @db.VarChar(255)
+  creatorId String    @db.VarChar(255)
+  creator   Users     @relation(fields: [creatorId], references: [id])
+  createdAt DateTime  @default(now())
   Likes     Likes[]
+  Comment   Comment[]
 }
 
 model Likes {
@@ -64,4 +66,15 @@ model Followers {
   followedTo  Users   @relation("FollowedTo", fields: [followingId], references: [id])
   Users       Users?  @relation(fields: [usersId], references: [id])
   usersId     String?
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  body      String
+  createdAt DateTime @default(now())
+  userId    String
+  postId    String
+
+  user Users @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Posts @relation(fields: [postId], references: [id], onDelete: Cascade)
 }

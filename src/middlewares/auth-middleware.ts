@@ -1,10 +1,10 @@
-import jwt, { JwtPayload, Secret } from "jsonwebtoken"
+import jwt, { type JwtPayload } from "jsonwebtoken"
 import { asyncHandler } from "../utils/asyncHandler"
-import { AuthError } from "../utils/ApiError"
+import { ApiError, AuthError } from "../utils/ApiError"
 import { config } from "../config/config"
 import { db } from "../config/db"
-import { type Request, Response, NextFunction } from "express"
-import { Users } from "@prisma/client"
+import { Roles, Users } from "@prisma/client"
+import { StatusCodes } from "http-status-codes"
 
 export const isLoggedIn = asyncHandler(async (req, res, next) => {
   let token
@@ -14,8 +14,6 @@ export const isLoggedIn = asyncHandler(async (req, res, next) => {
     req.headers.authorization.startsWith("Bearer")
   ) {
     token = req.headers.authorization.split(" ")[1]
-
-    // token = "Bearer gbhnjm235r5hbnj"
   }
 
   if (!token) {
@@ -36,3 +34,14 @@ export const isLoggedIn = asyncHandler(async (req, res, next) => {
     throw new AuthError()
   }
 })
+
+export const authorize = (...requiredRoles: Roles[]) =>
+  asyncHandler(async (req, res, next) => {
+    if (!requiredRoles.includes(req.body.user.role)) {
+      throw new ApiError(
+        StatusCodes.FORBIDDEN,
+        "You are not authorized to access this resource"
+      )
+    }
+    next()
+  })

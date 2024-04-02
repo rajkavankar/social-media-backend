@@ -18,6 +18,8 @@ tags:
     description: posts related operations
   - name: Like
     description: toggling and geting likes
+  - name: Comment
+    description: adding and fetching comments
 
 components:
   securitySchemes:
@@ -105,6 +107,29 @@ components:
           type: string
           format: uuid
           readOnly: true
+        userId:
+          type: string
+          format: uuid
+          readOnly: true
+        postId:
+          type: string
+          format: uuid
+          readOnly: true
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+    Comment:
+      required:
+        - body
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        body:
+          type: string
         userId:
           type: string
           format: uuid
@@ -659,6 +684,89 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Like"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+  # Comments paths
+  /comments/{postId}:
+    post:
+      summary: To add a comment to post
+      description: To add a comment to post in data base
+      security:
+        - BearerAuth: []
+      tags:
+        - Comment
+      parameters:
+        - in: path
+          name: postId
+          schema:
+            type: string
+          required: true
+          description: id of post
+      requestBody:
+        description: Body of comment
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Comment"
+
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Comment added
+                  data:
+                    $ref: "#/components/schemas/Comment"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    get:
+      summary: Get all comments of a post
+      description: Get all comments of a single post from database
+      security:
+        - BearerAuth: []
+      tags:
+        - Comment
+      parameters:
+        - in: path
+          name: postId
+          schema:
+            type: string
+          required: true
+          description: id of post
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Comments of a post
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Comment"
         "400":
           $ref: "#/components/responses/400"
         "401":
