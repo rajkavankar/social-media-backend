@@ -17,7 +17,16 @@ export const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(StatusCodes.BAD_REQUEST, "Password doesnt match")
   }
 
-  const isRegistered = await getUserByEmail(email)
+  const isRegistered = await db.users.findUnique({
+    where: {
+      email,
+    },
+    select: {
+      id: true,
+      email: true,
+      password: true,
+    },
+  })
   if (isRegistered) {
     throw new ApiError(StatusCodes.BAD_REQUEST, "Email is already registred")
   }

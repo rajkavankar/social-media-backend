@@ -20,6 +20,8 @@ tags:
     description: toggling and geting likes
   - name: Comment
     description: adding and fetching comments
+  - name: Following
+    description: follow or unfollow or get follow details
 
 components:
   securitySchemes:
@@ -135,6 +137,25 @@ components:
           format: uuid
           readOnly: true
         postId:
+          type: string
+          format: uuid
+          readOnly: true
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+    Following:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        followerId:
+          type: string
+          format: uuid
+          readOnly: true
+        followingId:
           type: string
           format: uuid
           readOnly: true
@@ -767,6 +788,120 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Comment"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+  /following/{userId}:
+    post:
+      summary: To follow a user
+      description: To follow a user
+      security:
+        - BearerAuth: []
+      tags:
+        - Following
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+          description: id of user
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: You started following
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      summary: To unfollow a user
+      description: To unfollow a user
+      security:
+        - BearerAuth: []
+      tags:
+        - Following
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+          description: id of user
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: You un followed user
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    get:
+      summary: Get all followers and followings of user
+      description: Get all followers and followings of user
+      security:
+        - BearerAuth: []
+      tags:
+        - Following
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+          description: id of user
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Likes of a post
+                  data:
+                    type: object
+                    properties:
+                      followers:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/Following"
+                      followings:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/Following"
         "400":
           $ref: "#/components/responses/400"
         "401":

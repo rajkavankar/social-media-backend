@@ -59,12 +59,13 @@ model Likes {
 }
 
 model Followers {
-  id          String  @id @default(cuid())
-  followerId  String  @db.VarChar(255)
-  followingId String  @db.VarChar(255)
-  follwedBy   Users   @relation("FollowedBy", fields: [followerId], references: [id])
-  followedTo  Users   @relation("FollowedTo", fields: [followingId], references: [id])
-  Users       Users?  @relation(fields: [usersId], references: [id])
+  id          String   @id @default(cuid())
+  followerId  String   @db.VarChar(255)
+  followingId String   @db.VarChar(255)
+  createdAt   DateTime @default(now())
+  follwedBy   Users    @relation("FollowedBy", fields: [followerId], references: [id])
+  followedTo  Users    @relation("FollowedTo", fields: [followingId], references: [id])
+  Users       Users?   @relation(fields: [usersId], references: [id])
   usersId     String?
 }
 
