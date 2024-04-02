@@ -23,16 +23,17 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-    cookieAuth:
-      type: apiKey
-      in: cookie
-      name: token
+    # cookieAuth:
+    #   type: apiKey
+    #   in: cookie
+    #   name: token
   schemas:
     User:
       required:
         - name
         - email
         - password
+        - role
       type: object
       properties:
         id:
@@ -56,10 +57,12 @@ components:
         picKey:
           type: string
           nullable: true
+          readOnly: true
         picUrl:
           type: string
           format: uri
           nullable: true
+          readOnly: true
         createdAt:
           type: string
           format: date-time
@@ -86,3 +89,182 @@ components:
           type: string
           format: date-time
           readOnly: true
+  responses:
+    "400":
+      description: Bad request. Invalid data
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              message:
+                type: string
+                example: Invalid data
+    "401":
+      description: Authorization information is missing or invalid.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              message:
+                type: string
+                example: Uauthorized access
+    "404":
+      description: Resource not found.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              message:
+                type: string
+                example: Resource no found
+    "500":
+      description: Internal Server Error.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              message:
+                type: string
+                example: Internal server error
+
+paths:
+  # Users paths
+  /auth:
+    post:
+      summary: To sign-up a user
+      description: To register a user in database
+      tags:
+        - User
+      requestBody:
+        description: Credentials to sign up a user
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              allOf:
+                - $ref: "#/components/schemas/User"
+                - type: object
+                  required:
+                    - confirmPassword
+                  properties:
+                    confirmPassword:
+                      type: string
+                      format: password
+                      writeOnly: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: User registered successfully
+        "400":
+          $ref: "#/components/responses/400"
+        "500":
+          $ref: "#/components/responses/500"
+  /auth/login:
+    post:
+      summary: To sign in a user
+      description: To sign in and generate jwt authorizasion token
+      tags:
+        - User
+      requestBody:
+        description: Credentials to signing in a user
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Logged in successfully
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        type: object
+                        $ref: "#/components/schemas/User"
+                      token:
+                        type: string
+        "400":
+          $ref: "#/components/responses/400"
+        "500":
+          $ref: "#/components/responses/500"
+  /auth/profile:
+    get:
+      summary: To get profile of a user
+      description: To get profile of a signed in user
+      security:
+        - BearerAuth: [read]
+      tags:
+        - User
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: profile
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        type: object
+                        $ref: "#/components/schemas/User"
+
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"

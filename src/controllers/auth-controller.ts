@@ -59,10 +59,25 @@ export const loginUser = asyncHandler(async (req, res) => {
       res
         .cookie("token", token, {
           httpOnly: true,
-          secure: true,
+          expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
         })
         .status(StatusCodes.OK)
         .json(new ApiResponse("Login successful", { user, token }))
     }
   }
+})
+
+export const logout = asyncHandler(async (req, res) => {
+  res.cookie("token", null, {
+    expires: new Date(Date.now()),
+    httpOnly: true,
+  })
+
+  res.status(StatusCodes.OK).json(new ApiResponse("Successfully logged out"))
+})
+
+export const profile = asyncHandler(async (req, res) => {
+  const { loggedInUser } = req.body
+
+  res.status(StatusCodes.OK).json(new ApiResponse("Profile", loggedInUser))
 })
