@@ -48,11 +48,12 @@ model Posts {
 }
 
 model Likes {
-  id     String @id @default(cuid())
-  userId String @db.VarChar(255)
-  postId String @db.VarChar(255)
-  post   Posts  @relation(fields: [postId], references: [id])
-  user   Users  @relation(fields: [userId], references: [id])
+  id        String   @id @default(cuid())
+  userId    String   @db.VarChar(255)
+  postId    String   @db.VarChar(255)
+  post      Posts    @relation(fields: [postId], references: [id])
+  user      Users    @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
 }
 
 model Followers {

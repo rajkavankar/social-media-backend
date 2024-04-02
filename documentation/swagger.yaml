@@ -16,6 +16,8 @@ tags:
     description: user related operatios
   - name: Post
     description: posts related operations
+  - name: Like
+    description: toggling and geting likes
 
 components:
   securitySchemes:
@@ -96,6 +98,26 @@ components:
           type: string
           format: date-time
           readOnly: true
+    Like:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        userId:
+          type: string
+          format: uuid
+          readOnly: true
+        postId:
+          type: string
+          format: uuid
+          readOnly: true
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+
   responses:
     "400":
       description: Bad request. Invalid data
@@ -529,6 +551,114 @@ paths:
                     items:
                       $ref: "#/components/schemas/Post"
 
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+  # Likes paths
+  /likes/{postId}:
+    post:
+      summary: To like a post
+      description: To like a post
+      security:
+        - BearerAuth: []
+      tags:
+        - Like
+      parameters:
+        - in: path
+          name: postId
+          schema:
+            type: string
+          required: true
+          description: id of post
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Liked post
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      summary: To unlike a post
+      description: To unlike a post
+      security:
+        - BearerAuth: []
+      tags:
+        - Like
+      parameters:
+        - in: path
+          name: postId
+          schema:
+            type: string
+          required: true
+          description: id of post
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Unliked post
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    get:
+      summary: Get all likes of a post
+      description: Get all likes of a single post from database
+      security:
+        - BearerAuth: []
+      tags:
+        - Like
+      parameters:
+        - in: path
+          name: postId
+          schema:
+            type: string
+          required: true
+          description: id of post
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Likes of a post
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Like"
         "400":
           $ref: "#/components/responses/400"
         "401":
