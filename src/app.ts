@@ -7,6 +7,7 @@ import fs from "fs"
 import path from "path"
 import Yaml from "yaml"
 import cors from "cors"
+import morgan from "morgan"
 
 const app: Application = express()
 
@@ -16,6 +17,8 @@ app.use(cookieParser())
 app.use(cors())
 
 app.use("/api/v1", router)
+
+app.use(morgan("dev"))
 
 const file = fs.readFileSync(
   path.join(__dirname, "../documentation/swagger.yaml"),
