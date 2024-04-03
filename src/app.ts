@@ -21,12 +21,12 @@ const file = fs.readFileSync(
 )
 const swaggerDocument = Yaml.parse(file)
 
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument))
+app.use("/", swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 
-app.get("/", (_req, res) => {
-  res.status(200).json({
-    msg: "Health check",
-  })
-})
+// app.get("/", (_req, res) => {
+//   res.status(200).json({
+//     msg: "Health check",
+//   })
+// })
 
 export { app }
