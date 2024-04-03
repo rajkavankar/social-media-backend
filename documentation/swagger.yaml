@@ -88,6 +88,10 @@ components:
           type: string
           nullable: true
           readOnly: true
+        media:
+          type: string
+          format: binary
+          writeOnly: true
         mediaUrl:
           type: string
           format: uri

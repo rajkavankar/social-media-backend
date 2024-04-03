@@ -10,9 +10,10 @@ import {
   updatePost,
 } from "../controllers/post-controller"
 const router = Router()
+import { upload } from "../middlewares/multer-middleware"
 
 router.get("/user", isLoggedIn, getPostByLoggedInUser)
-router.post("/", isLoggedIn, createPost)
+router.post("/", upload.single("media"), isLoggedIn, createPost)
 router.get("/", isLoggedIn, getPosts)
 router.get("/:id", isLoggedIn, getPostById)
 router.put("/:id", isLoggedIn, updatePost)

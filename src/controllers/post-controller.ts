@@ -5,24 +5,37 @@ import { ApiError, AuthError, ServerError } from "../utils/ApiError"
 import { db } from "../config/db"
 import { type loggedInUserType } from "../types/UserTypes"
 import { Posts } from "@prisma/client"
+import { uploadOnCloudinary } from "../helpers/cloudinary-service"
 
 export const createPost = asyncHandler(async (req, res) => {
   const { body, loggedInUser }: { body: string } & loggedInUserType = req.body
+  let fileRes
+  if (req.file) {
+    // const response = await utapi.uploadFiles(req.file)
+    fileRes = await uploadOnCloudinary(req.file.path)
+  }
 
   if (!body) {
     throw new ApiError(StatusCodes.BAD_REQUEST, "Plese add contoent to post")
   }
 
-  const post = await db.posts.create({
-    data: {
-      body: body,
-      creatorId: loggedInUser.id,
-    },
-  })
-
-  if (post) {
-    res.status(StatusCodes.CREATED).json(new ApiResponse("Post created", post))
-  } else {
+  try {
+    const post = await db.posts.create({
+      data: {
+        body: body,
+        creatorId: loggedInUser.id,
+        mediaKey: fileRes ? fileRes.public_id : null,
+        mediaUrl: fileRes ? fileRes.secure_url : null,
+      },
+    })
+    if (post) {
+      res
+        .status(StatusCodes.CREATED)
+        .json(new ApiResponse("Post created", post))
+    } else {
+      throw new ServerError()
+    }
+  } catch (error) {
     throw new ServerError()
   }
 })

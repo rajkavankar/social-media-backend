@@ -12,6 +12,7 @@ const app: Application = express()
 app.use(express.json({ limit: "32kb" }))
 app.use(express.urlencoded({ extended: true, limit: "32kb" }))
 app.use(cookieParser())
+
 app.use("/api/v1", router)
 
 const file = fs.readFileSync(
