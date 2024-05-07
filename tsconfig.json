@@ -5,9 +5,11 @@
     "baseUrl": "src",
     "outDir": "dist",
     "sourceMap": true,
+    "strict": true,
     "noImplicitAny": true,
     "allowImportingTsExtensions": false,
-    "noEmit": false
+    "noEmit": false,
+    "typeRoots": ["./src/types", "./node_modules/@types"]
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "src/types/express/index.d.tsd.ts"]
 }

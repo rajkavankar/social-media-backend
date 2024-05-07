@@ -11,9 +11,10 @@ import { isLoggedIn } from "../middlewares/auth-middleware"
 const router = Router()
 
 router.post("/", requestBodyValidation(registerSchema), registerUser)
+
 router.post("/login", requestBodyValidation(loginSchema), loginUser)
 
 router.get("/profile", isLoggedIn, profile)
-router.get("/logout", logout)
+router.get("/logout", isLoggedIn, logout)
 
 export { router as authRouter }

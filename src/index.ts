@@ -1,5 +1,7 @@
+import { Users } from "@prisma/client"
 import { app } from "./app"
 import { config } from "./config/config"
+import * as express from "express"
 
 const { NODE_ENV, PORT } = config
 

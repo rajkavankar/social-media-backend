@@ -1,8 +1,14 @@
-export class ApiResponse<U> {
-  private success: boolean
-  private message: string
-  private data?: U | U[]
-  constructor(message = "Success", data?: U | U[]) {
+export interface ApiResponseType<T> {
+  success: boolean
+  message: string
+  data?: T | T[]
+}
+
+export class ApiResponse<T> implements ApiResponseType<T> {
+  success: boolean
+  message: string
+  data?: T | T[]
+  constructor(message = "Success", data?: T | T[]) {
     this.success = true
     this.message = message
     this.data = data

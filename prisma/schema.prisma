@@ -19,21 +19,18 @@ enum Roles {
 }
 
 model Users {
-  id        String   @id @default(cuid())
-  name      String   @db.VarChar(255)
-  email     String   @unique @db.VarChar(255)
-  password  String   @db.VarChar(255)
-  role      Roles    @default(USER)
-  picKey    String?  @db.VarChar(255)
-  picUrl    String?  @db.VarChar(255)
-  createdAt DateTime @default(now())
+  id        String      @id @default(cuid())
+  name      String      @db.VarChar(255)
+  email     String      @unique @db.VarChar(255)
+  password  String      @db.VarChar(255)
+  role      Roles       @default(USER)
+  picKey    String?     @db.VarChar(255)
+  picUrl    String?     @db.VarChar(255)
+  createdAt DateTime    @default(now())
   Posts     Posts[]
   Likes     Likes[]
-
-  FollowedBy Followers[] @relation("FollowedBy")
-  FollowedTo Followers[] @relation("FollowedTo")
-
-  Followers Followers[]
+  followers Followers[] @relation("following")
+  following Followers[] @relation("follower")
   Comment   Comment[]
 }
 
@@ -59,14 +56,11 @@ model Likes {
 }
 
 model Followers {
-  id          String   @id @default(cuid())
-  followerId  String   @db.VarChar(255)
-  followingId String   @db.VarChar(255)
-  createdAt   DateTime @default(now())
-  follwedBy   Users    @relation("FollowedBy", fields: [followerId], references: [id])
-  followedTo  Users    @relation("FollowedTo", fields: [followingId], references: [id])
-  Users       Users?   @relation(fields: [usersId], references: [id])
-  usersId     String?
+  id          String @id @default(cuid())
+  followerId  String
+  followingId String
+  following   Users  @relation("follower", fields: [followingId], references: [id])
+  follower    Users  @relation("following", fields: [followerId], references: [id])
 }
 
 model Comment {

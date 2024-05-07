@@ -9,6 +9,8 @@ export const registerSchema = z.object({
   picUrl: z.string().optional(),
 })
 
+export type UserRegisterationType = z.infer<typeof registerSchema>
+
 export const loginSchema = z.object({
   email: z.string().email(),
   password: z.string(),

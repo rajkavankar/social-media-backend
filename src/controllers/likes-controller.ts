@@ -1,48 +1,48 @@
 import { StatusCodes } from "http-status-codes"
 import { db } from "../config/db"
-import { type loggedInUserType } from "../types/UserTypes"
 import { asyncHandler } from "../utils/asyncHandler"
 import { ApiResponse } from "../utils/ApiResponse"
 import { ServerError } from "../utils/ApiError"
+import { Request } from "express"
 
-export const likePost = asyncHandler(async (req, res) => {
-  const { loggedInUser }: loggedInUserType = req.body
-  const { postId } = req.params
-  const liked = await db.likes.findFirst({
-    where: {
-      AND: [
-        {
-          postId,
-        },
-        {
-          userId: loggedInUser.id,
-        },
-      ],
-    },
-  })
-
-  if (liked) {
-    res
-      .status(StatusCodes.BAD_REQUEST)
-      .json(new ApiResponse("Already iked the post"))
-  } else {
-    const like = await db.likes.create({
-      data: {
-        postId,
-        userId: loggedInUser.id,
+export const likePost = asyncHandler(
+  async (req: Request<{ postId?: string }>, res) => {
+    const { postId } = req.params
+    const liked = await db.likes.findFirst({
+      where: {
+        AND: [
+          {
+            postId,
+          },
+          {
+            userId: req.user?.id,
+          },
+        ],
       },
     })
 
-    if (like) {
-      res.status(StatusCodes.CREATED).json(new ApiResponse("Liked the post"))
+    if (liked) {
+      res
+        .status(StatusCodes.BAD_REQUEST)
+        .json(new ApiResponse("Already iked the post"))
     } else {
-      throw new ServerError()
+      const like = await db.likes.create({
+        data: {
+          postId: postId!,
+          userId: req.user?.id!,
+        },
+      })
+
+      if (like) {
+        res.status(StatusCodes.CREATED).json(new ApiResponse("Liked the post"))
+      } else {
+        throw new ServerError()
+      }
     }
   }
-})
+)
 
-export const unLikePost = asyncHandler(async (req, res) => {
-  const { loggedInUser }: loggedInUserType = req.body
+export const unLikePost = asyncHandler(async (req: Request, res) => {
   const { postId } = req.params
 
   const liked = await db.likes.findFirst({
@@ -52,7 +52,7 @@ export const unLikePost = asyncHandler(async (req, res) => {
           postId,
         },
         {
-          userId: loggedInUser.id,
+          userId: req.user?.id!,
         },
       ],
     },
@@ -80,6 +80,14 @@ export const getLikesByPost = asyncHandler(async (req, res) => {
   const likes = await db.likes.findMany({
     where: {
       postId,
+    },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
     },
   })
 

@@ -1,13 +1,14 @@
 import { StatusCodes } from "http-status-codes"
 
 export class ApiError extends Error {
-  protected statusCode: number
-  protected success: boolean
+  statusCode: number
+  success: boolean
   constructor(statusCode: number, message = "Something went wrong") {
     super(message)
     this.statusCode = statusCode
     this.message = message
     this.success = false
+    Object.setPrototypeOf(this, ApiError.prototype)
   }
 }
 
