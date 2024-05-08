@@ -1,5 +1,7 @@
 # Social media backend
 
+![Screen shot](./ss.JPG "Title")
+
 ### Environment file setup
 
 create `.env` file
